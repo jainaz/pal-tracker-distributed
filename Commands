@@ -1,0 +1,58 @@
+./gradlew applications:registration-server:bootRun
+./gradlew applications:allocations-server:bootRun
+./gradlew applications:backlog-server:bootRun
+./gradlew applications:timesheets-server:bootRun
+
+./gradlew platform-services:eureka-server:bootRun
+
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8081/allocations -d"{\"projectId\": 1, \"userId\": 1, \"firstDay\": \"2015-05-17\", \"lastDay\": \"2015-05-18\"}"
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8082/stories -d"{\"projectId\": 1, \"name\": \"Find some reeds\"}"
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8084/time-entries/ -d"{\"projectId\": 1, \"userId\": 1, \"date\": \"2015-05-17\", \"hours\": 6}"
+
+
+
+cd ~/workspace/assignment-submission
+
+
+./gradlew cloudNativeDeveloperDistributedSystemDeployment \
+    -PregistrationServerUrl=https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
+
+
+
+cf create-service p-circuit-breaker-dashboard  standard tracker-circuit-breaker-dashboard
+
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8083/registration -d'{"name": "Peter"}'
+
+curl -i localhost:8083/accounts?ownerId=3
+
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8083/projects -d"{\"name\": \"Project A\", \"accountId\": \"2\"}"
+curl -i -XPOST -H"Content-Type: application/json" localhost:8083/projects -d"{\"name\": \"Project B\", \"accountId\": \"2\"}"
+curl -i -XPOST -H"Content-Type: application/json" localhost:8083/projects -d"{\"name\": \"Project C\", \"accountId\": \"2\"}"
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8081/allocations/ -d"{\"projectId\": \"2\", \"userId\": \"3\", \"firstDay\": \"2015-05-17\", \"lastDay\": \"2015-05-18\"}"
+
+
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8081/allocations/ -d"{\"projectId\": \"4\", \"userId\": \"3\", \"firstDay\": \"2015-05-17\", \"lastDay\": \"2015-05-18\"}"
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8081/allocations/ -d"{\"projectId\": \"2\", \"userId\": \"3\", \"firstDay\": \"2015-05-17\", \"lastDay\": \"2015-05-18\"}"
+
+
+cd ~/workspace/assignment-submission
+./gradlew cloudNativeDeveloperDistributedSystemWithCircuitBreaker \
+    -PregistrationServerUrl=https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
+
+
+
+

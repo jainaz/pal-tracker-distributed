@@ -24,8 +24,10 @@ cd ~/workspace/assignment-submission
     -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
 
 
-
+cf marketplace
 cf create-service p-circuit-breaker-dashboard  standard tracker-circuit-breaker-dashboard
+
+
 
 
 curl -i -XPOST -H"Content-Type: application/json" localhost:8083/registration -d'{"name": "Peter"}'
@@ -52,6 +54,76 @@ cd ~/workspace/assignment-submission
     -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
     -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
     -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
+
+
+Starting assignment...
+
+GET https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/actuator/health
+GET https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/actuator/health
+GET https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/actuator/health
+GET https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/actuator/health
+POST https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/registration
+GET https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/accounts?ownerId=4
+POST https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/projects
+POST https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/allocations
+POST https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/stories
+POST https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/time-entries
+
+Assignment was successful.
+
+===============================================================================================================================
+							 SSO
+===============================================================================================================================
+cf create-service p-identity uaa tracker-sso
+
+curl 'http://localhost:8999/oauth/token' -i -u 'tracker-client:supersecret' -X POST -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'grant_type=client_credentials&response_type=token&token_format=opaque'
+
+
+
+cd ~/workspace/assignment-submission
+./gradlew cloudNativeDeveloperDistributedSystemWithSecurity \
+    -PuaaUrl=https://login.sys.evans.pal.pivotal.io/ \
+    -PclientId=aa6bfe80-4859-4714-9c63-1bfb99b5d56c \
+    -PclientSecret=2d40edb6-4d4a-470c-bf37-7a39a466540a \
+    -PregistrationServerUrl=https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
+
+
+
+security.oauth2.resource.token-info-uri=http://localhost:8999/oauth/check_token
+management.endpoints.web.exposure.include=env,health
+security.oauth2.client.access-token-uri=http://localhost:8999/oauth/token
+security.oauth2.client.grant-type=client_credentials
+
++ @EnableWebSecurity
++ @EnableResourceServer
++ @EnableOAuth2Client
+
+
+@Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+            .withClient("tracker-client")
+            .secret("supersecret")
+            .authorizedGrantTypes("client_credentials")
+            .scopes("openid");
+    }
+
+
+bootRun.environment([
+    "APPLICATION_OAUTH_ENABLED": true,
+    "SECURITY_OAUTH2_CLIENT_CLIENT_ID": "tracker-client",
+    "SECURITY_OAUTH2_CLIENT_CLIENT_SECRET": "supersecret"
+])
+
+    
+===============================================================================================================================
+							 SSO
+===============================================================================================================================
+
+
 
 
 

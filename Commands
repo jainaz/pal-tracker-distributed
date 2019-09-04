@@ -78,29 +78,28 @@ cf create-service p-identity uaa tracker-sso
 
 curl 'http://localhost:8999/oauth/token' -i -u 'tracker-client:supersecret' -X POST -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'grant_type=client_credentials&response_type=token&token_format=opaque'
 
+	HTTP/1.1 200 
+	Cache-Control: no-store
+	Pragma: no-cache
+	X-Content-Type-Options: nosniff
+	X-XSS-Protection: 1; mode=block
+	X-Frame-Options: DENY
+	Content-Type: application/json;charset=UTF-8
+	Transfer-Encoding: chunked
+	Date: Wed, 04 Sep 2019 04:31:02 GMT
 
+	{"access_token":"4bacaca4-6fd9-4491-bf1c-756072f39564","token_type":"bearer","expires_in":40792,"scope":"openid"}
 
-cd ~/workspace/assignment-submission
-./gradlew cloudNativeDeveloperDistributedSystemWithSecurity \
-    -PuaaUrl=https://login.sys.evans.pal.pivotal.io/ \
-    -PclientId=aa6bfe80-4859-4714-9c63-1bfb99b5d56c \
-    -PclientSecret=2d40edb6-4d4a-470c-bf37-7a39a466540a \
-    -PregistrationServerUrl=https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
-    -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
-    -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
-    -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
+curl localhost:8083 -H"Authorization: Bearer 4bacaca4-6fd9-4491-bf1c-756072f39564"
 
-
-
+@EnableWebSecurity
+@EnableResourceServer
 security.oauth2.resource.token-info-uri=http://localhost:8999/oauth/check_token
 management.endpoints.web.exposure.include=env,health
+
+@EnableOAuth2Client
 security.oauth2.client.access-token-uri=http://localhost:8999/oauth/token
 security.oauth2.client.grant-type=client_credentials
-
-+ @EnableWebSecurity
-+ @EnableResourceServer
-+ @EnableOAuth2Client
-
 
 @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -118,11 +117,22 @@ bootRun.environment([
     "SECURITY_OAUTH2_CLIENT_CLIENT_SECRET": "supersecret"
 ])
 
+
+cd ~/workspace/assignment-submission
+./gradlew cloudNativeDeveloperDistributedSystemWithSecurity \
+    -PuaaUrl=https://login.sys.evans.pal.pivotal.io/ \
+    -PclientId=aa6bfe80-4859-4714-9c63-1bfb99b5d56c \
+    -PclientSecret=2d40edb6-4d4a-470c-bf37-7a39a466540a \
+    -PregistrationServerUrl=https://registration-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PbacklogServerUrl=https://backlog-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PallocationsServerUrl=https://allocations-pal-ankur-anand.apps.evans.pal.pivotal.io/ \
+    -PtimesheetsServerUrl=https://timesheets-pal-ankur-anand.apps.evans.pal.pivotal.io/
     
 ===============================================================================================================================
-							 SSO
+							 Re platforming
 ===============================================================================================================================
 
+https://www.google.com/search?q=efforts+on+replatfoming+java+application&client=ubuntu&hs=tkm&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjFnMPlxrbkAhUOIKwKHdxxCdwQ_AUIEygC&biw=1213&bih=895#imgrc=IpG7ExEe-0xy0M:
 
 
 

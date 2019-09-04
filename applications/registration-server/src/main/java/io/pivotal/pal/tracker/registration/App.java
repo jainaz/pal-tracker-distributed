@@ -13,6 +13,7 @@ import java.util.TimeZone;
 
 @EnableWebSecurity
 @EnableResourceServer
+@EnableOAuth2Client
 @SpringBootApplication
 @EnableEurekaClient
 @ComponentScan({
